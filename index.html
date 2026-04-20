@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Refeitório - Gerar QR Code | IFPE - Campus Barreiros</title>
 
+    <link rel="icon" type="image/png" href="logo_sistema.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -36,37 +38,45 @@
             flex-direction: column;
         }
 
-        /* AULA TDS: NOVO CABEÇALHO FLEXBOX PARA ACOMODAR AS LOGOS LADO A LADO */
+        /* AULA TDS: CABEÇALHO ATUALIZADO COM SVG CENTRAL E LOGOS LATERAIS */
         .cabecalho {
             background-color: #1e7b34;
             color: white;
             padding: 20px 15px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between; /* Espalha os elementos */
-            gap: 10px;
         }
         
+        .cabecalho-linha-superior {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
         .cabecalho-texto {
             text-align: center;
-            flex: 1; /* Faz o texto ocupar o espaço central */
         }
 
         .cabecalho h1 {
             font-size: 18px;
             font-weight: 800;
             margin-bottom: 3px;
+            text-align: center;
         }
 
         .cabecalho p {
             font-size: 13px;
             color: #e9f5ec;
+            text-align: center;
         }
 
         .logo-img {
             max-width: 60px;
             height: auto;
-            border-radius: 8px; /* Borda suave para caso a imagem seja quadrada */
+            border-radius: 8px;
         }
 
         /* Área do Formulário */
@@ -77,15 +87,16 @@
             gap: 20px;
         }
 
-        /* AULA TDS: NOVA CAIXA DE ALERTA PARA A MATRÍCULA */
+        /* AULA TDS: ALERTA COM TEXTO JUSTIFICADO */
         .alerta-matricula {
-            background-color: #fffbeb; /* Amarelo clarinho */
-            border-left: 5px solid #f59e0b; /* Laranja forte na lateral */
+            background-color: #fffbeb;
+            border-left: 5px solid #f59e0b;
             padding: 12px 15px;
             border-radius: 8px;
             font-size: 13px;
             color: #92400e;
             line-height: 1.5;
+            text-align: justify; /* Justificado conforme solicitado */
         }
 
         .grupo-input {
@@ -133,6 +144,22 @@
 
         .btn-gerar:hover { background-color: #155d27; }
         .btn-gerar:active { transform: scale(0.98); }
+        
+        /* Botão Secundário para Download */
+        .btn-download {
+            background-color: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+        }
+        .btn-download:hover { background-color: #0284c7; }
 
         /* Área de Resultado */
         #area_resultado {
@@ -154,6 +181,9 @@
             border-radius: 15px;
             border: 2px solid #e2e8f0;
             margin-bottom: 15px;
+            /* Centraliza a imagem internamente caso o lib a gere com margem */
+            display: flex;
+            justify-content: center; 
         }
 
         .hash-texto {
@@ -178,6 +208,7 @@
             padding: 12px;
             border-radius: 10px;
             width: 100%;
+            margin-top: 15px;
         }
 
         /* Rodapé */
@@ -197,20 +228,28 @@
 
     <div class="container">
         <div class="cabecalho">
-            <img src="logo_sistema.png" alt="Logo Sistema" class="logo-img" onerror="this.style.display='none'">
+            <div class="cabecalho-linha-superior">
+                <img src="logo_sistema.png" alt="Logo Sistema" class="logo-img" onerror="this.style.display='none'">
+                
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                    <path d="M7 2v20"></path>
+                    <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                </svg>
+                
+                <img src="logo_ifpe.png" alt="Logo IFPE" class="logo-img" onerror="this.style.display='none'">
+            </div>
             
             <div class="cabecalho-texto">
-                <h1>Sistema Refeitório</h1>
-                <p>Gerador de QR Code</p>
+                <h1>Sistema Refeitório | IFPE - Campus Barreiros</h1>
+                <p>Gerador de QR Code para Acesso ao Refeitório</p>
             </div>
-
-            <img src="logo_ifpe.png" alt="Logo IFPE" class="logo-img" onerror="this.style.display='none'">
         </div>
 
         <div class="formulario">
             <div class="alerta-matricula">
                 <strong>ATENÇÃO ALUNO(A):</strong><br>
-                O QR Code gerado é baseado na matrícula que você digitar. Se a matrícula estiver incorreta ou com erros de digitação, a catraca do refeitório <strong>NÃO</strong> vai liberar a sua refeição.
+                O QR Code gerado é baseado na matrícula informada. Caso a matrícula esteja incorreta ou contenha erros de digitação, o sistema do refeitório <strong>NÃO</strong> liberará a sua refeição. Digite a matrícula exatamente como foi repassada a você.
             </div>
 
             <div class="grupo-input">
@@ -226,8 +265,10 @@
             <div class="box-qrcode" id="boxQrCode">
                 </div>
             
+            <button class="btn-download" onclick="baixarQRCode()">⬇️ BAIXAR QR CODE</button>
+            
             <div class="instrucao">
-                ⚠️ Tire um print da tela ou salve a imagem acima e apresente na catraca do refeitório.
+                ⚠️ Salve a imagem acima e apresente na catraca do refeitório.
             </div>
         </div>
     </div>
@@ -241,6 +282,7 @@
 
     <script>
         let qrcode_desenho = null; 
+        let matriculaAtual = ""; // Variável para o nome do arquivo de download
 
         function gerarCodigo() {
             try {
@@ -250,6 +292,8 @@
                     alert("Por favor, digite sua matrícula primeiro!");
                     return;
                 }
+                
+                matriculaAtual = matriculaBruta; // Salva para o download
 
                 let hashSeguro = CryptoJS.SHA256(matriculaBruta).toString(CryptoJS.enc.Hex).toUpperCase();
 
@@ -276,8 +320,34 @@
 
             } catch (erro) {
                 console.error(erro);
-                alert("Ops! Ocorreu um erro no processamento.\n\nDetalhe: " + erro.message + "\n\nVerifique se a sua conexão não está bloqueando as bibliotecas de segurança.");
+                alert("Ops! Ocorreu um erro no processamento.\n\nDetalhe: " + erro.message);
             }
+        }
+
+        // AULA TDS: FUNÇÃO QUE EXTRAI A IMAGEM DA TELA E FAZ O DOWNLOAD
+        function baixarQRCode() {
+            // A biblioteca qrcode.js injeta uma tag <img> dentro da div boxQrCode
+            let container = document.getElementById("boxQrCode");
+            let img = container.querySelector("img");
+            
+            // Ocasionalmente a biblioteca desenha num <canvas> em navegadores velhos, então checamos ambos
+            let canvas = container.querySelector("canvas");
+            
+            let link = document.createElement("a");
+            
+            if (img && img.src) {
+                link.href = img.src;
+            } else if (canvas) {
+                link.href = canvas.toDataURL("image/png");
+            } else {
+                alert("Erro: O QR Code ainda não foi gerado.");
+                return;
+            }
+
+            link.download = "QRCode_Refeitorio_" + matriculaAtual + ".png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         document.getElementById("inputMatricula").addEventListener("keypress", function(event) {
