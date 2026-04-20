@@ -67,7 +67,7 @@
         }
 
         .logo-img {
-            max-width: 75px; /* Tamanho da imagem aumentado */
+            max-width: 75px; 
             height: auto;
             border-radius: 8px;
         }
@@ -80,12 +80,32 @@
             gap: 20px;
         }
 
-        /* ALERTA COM TEXTO JUSTIFICADO */
-        .alerta-matricula {
+        /* --- AULA TDS: NOVO ALERTA MODERNO E ANIMADO --- */
+        .alerta-container {
+            display: flex;
+            align-items: center;
             background-color: #fffbeb;
             border-left: 5px solid #f59e0b;
-            padding: 12px 15px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Sombra suave */
+            gap: 15px;
+        }
+
+        .alerta-icone {
+            font-size: 35px;
+            /* Aplica a animação infinita de pulsar */
+            animation: chamarAtencao 1.5s infinite;
+        }
+
+        /* Configuração da animação CSS */
+        @keyframes chamarAtencao {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); } /* Cresce 15% */
+            100% { transform: scale(1); }
+        }
+
+        .alerta-texto {
             font-size: 13px;
             color: #92400e;
             line-height: 1.5;
@@ -225,16 +245,20 @@
             <div class="cabecalho-texto">
                 <h1>Sistema Refeitório</h1>
                 <p>IFPE - Campus Barreiros</p><br>
-                <strong><p>Gerador de QR CODE para Acesso ao Refeitório</p></strong>
+                <strong><p>Gerador de QR Code para Acesso ao Refeitório</p></strong>
             </div>
             
             <img src="logo_ifpe.png" alt="Logo IFPE" class="logo-img" onerror="this.style.display='none'">
         </div>
 
         <div class="formulario">
-            <div class="alerta-matricula">
-                <strong>ATENÇÃO ALUNO(A):</strong><br>
-                O QR Code gerado é baseado na matrícula informada. Caso a matrícula esteja incorreta ou contenha erros de digitação, o sistema do refeitório <strong>NÃO</strong> liberará a sua refeição. Digite a matrícula exatamente como foi repassada a você.
+            
+            <div class="alerta-container">
+                <div class="alerta-icone">🧑‍🎓</div>
+                <div class="alerta-texto">
+                    <strong>ATENÇÃO ALUNO(A):</strong><br>
+                    O QR Code gerado é baseado na matrícula informada. Caso a matrícula esteja incorreta ou contenha erros de digitação, o sistema do refeitório <strong>NÃO</strong> liberará a sua refeição. Digite a matrícula exatamente como foi repassada a você.
+                </div>
             </div>
 
             <div class="grupo-input">
