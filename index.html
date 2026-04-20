@@ -208,27 +208,68 @@
     <div class="rodape">
         <strong>Informações do Desenvolvedor:</strong><br>
         Sistema Desenvolvido por: Prof. Vinícius Oliveira<br>
-        TDS / Assistência Estudantil<br>
         IFPE - Campus Barreiros<br>
         Versão 1.0 / 2026
     </div>
 
     <script>
+        // Variável global para guardar o desenho do QR Code na memória (Padrão Singleton)
+        let qrcode_desenho = null; 
+
         function gerarCodigo() {
-            // 1. Pega o que o aluno digitou e tira espaços em branco
-            let matriculaBruta = document.getElementById("inputMatricula").value.trim().toUpperCase();
+            try {
+                // 1. Pega o que o aluno digitou e tira espaços em branco
+                let matriculaBruta = document.getElementById("inputMatricula").value.trim().toUpperCase();
 
-            // 2. Validação: Checa se o campo está vazio
-            if (matriculaBruta === "") {
-                alert("Por favor, digite sua matrícula primeiro!");
-                return;
+                // 2. Validação: Checa se o campo está vazio
+                if (matriculaBruta === "") {
+                    alert("Por favor, digite sua matrícula primeiro!");
+                    return;
+                }
+
+                // 3. A Mágica da Matemática: Gera o Hash SHA-256
+                let hashSeguro = CryptoJS.SHA256(matriculaBruta).toString(CryptoJS.enc.Hex).toUpperCase();
+
+                // 4. Mostra o resultado na tela
+                document.getElementById("area_resultado").style.display = "flex";
+                
+                // Exibe um pedaço do Hash para o aluno saber que foi criptografado
+                let hashResumido = hashSeguro.substring(0, 8) + "......" + hashSeguro.substring(hashSeguro.length - 8);
+                document.getElementById("txtHash").innerText = "Chave Criptografada: " + hashResumido;
+
+                // 5. Lógica Segura de Geração do QR Code
+                let areaQr = document.getElementById("boxQrCode");
+
+                if (qrcode_desenho === null) {
+                    // Se for a primeira vez que o aluno clica, cria o gerador
+                    qrcode_desenho = new QRCode(areaQr, {
+                        text: hashSeguro,
+                        width: 220,
+                        height: 220,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                } else {
+                    // Se o gerador já existe, apenas limpa e desenha o novo Hash
+                    qrcode_desenho.clear();
+                    qrcode_desenho.makeCode(hashSeguro);
+                }
+
+            } catch (erro) {
+                // Se der qualquer erro (ex: bloqueio de internet), o sistema avisa!
+                console.error(erro);
+                alert("Ops! Ocorreu um erro no processamento.\n\nDetalhe: " + erro.message + "\n\nVerifique se a sua conexão não está bloqueando as bibliotecas de segurança.");
             }
+        }
 
-            // 3. A Mágica da Matemática: Gera o Hash SHA-256 (Exatamente igual ao Python do Professor)
-            let hashSeguro = CryptoJS.SHA256(matriculaBruta).toString(CryptoJS.enc.Hex).toUpperCase();
-
-            // 4. Mostra o resultado na tela
-            document.getElementById("area_resultado").style.display = "flex";
-            
-            // Exibe um pedaço do Hash para o aluno saber que foi criptografado (Ex: E4F9...A1B2)
-            let hashResumido = hashSeguro.substring
+        // Bônus de UX: Permite gerar apertando a tecla 'Enter' do teclado
+        document.getElementById("inputMatricula").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                gerarCodigo();
+            }
+        });
+    </script>
+</body>
+</html>
