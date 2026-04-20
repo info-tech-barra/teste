@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal do Aluno - IFPE Barreiros</title>
+    <title>Sistema Refeitório - Gerar QR Code | IFPE - Campus Barreiros</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
@@ -27,7 +27,7 @@
         .container {
             background: white;
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             margin-top: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -36,27 +36,37 @@
             flex-direction: column;
         }
 
-        /* Cabeçalho Verde */
+        /* AULA TDS: NOVO CABEÇALHO FLEXBOX PARA ACOMODAR AS LOGOS LADO A LADO */
         .cabecalho {
             background-color: #1e7b34;
             color: white;
-            padding: 30px 20px;
-            text-align: center;
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Espalha os elementos */
+            gap: 10px;
         }
         
-        .cabecalho svg {
-            margin-bottom: 10px;
+        .cabecalho-texto {
+            text-align: center;
+            flex: 1; /* Faz o texto ocupar o espaço central */
         }
 
         .cabecalho h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .cabecalho p {
-            font-size: 14px;
+            font-size: 13px;
             color: #e9f5ec;
+        }
+
+        .logo-img {
+            max-width: 60px;
+            height: auto;
+            border-radius: 8px; /* Borda suave para caso a imagem seja quadrada */
         }
 
         /* Área do Formulário */
@@ -65,6 +75,17 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+
+        /* AULA TDS: NOVA CAIXA DE ALERTA PARA A MATRÍCULA */
+        .alerta-matricula {
+            background-color: #fffbeb; /* Amarelo clarinho */
+            border-left: 5px solid #f59e0b; /* Laranja forte na lateral */
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.5;
         }
 
         .grupo-input {
@@ -113,9 +134,9 @@
         .btn-gerar:hover { background-color: #155d27; }
         .btn-gerar:active { transform: scale(0.98); }
 
-        /* Área de Resultado (Oculta por padrão) */
+        /* Área de Resultado */
         #area_resultado {
-            display: none; /* Escondido até o botão ser clicado */
+            display: none;
             flex-direction: column;
             align-items: center;
             padding: 0 25px 30px 25px;
@@ -176,18 +197,24 @@
 
     <div class="container">
         <div class="cabecalho">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
-                <path d="M7 2v20"></path>
-                <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
-            </svg>
-            <h1>Portal do Aluno</h1>
-            <p>Gerador de Acesso ao Refeitório</p>
+            <img src="logo_sistema.png" alt="Logo Sistema" class="logo-img" onerror="this.style.display='none'">
+            
+            <div class="cabecalho-texto">
+                <h1>Sistema Refeitório</h1>
+                <p>Gerador de QR Code</p>
+            </div>
+
+            <img src="logo_ifpe.png" alt="Logo IFPE" class="logo-img" onerror="this.style.display='none'">
         </div>
 
         <div class="formulario">
+            <div class="alerta-matricula">
+                <strong>ATENÇÃO ALUNO(A):</strong><br>
+                O QR Code gerado é baseado na matrícula que você digitar. Se a matrícula estiver incorreta ou com erros de digitação, a catraca do refeitório <strong>NÃO</strong> vai liberar a sua refeição.
+            </div>
+
             <div class="grupo-input">
-                <label for="inputMatricula">Digite sua Matrícula:</label>
+                <label for="inputMatricula">Digite sua Matrícula OFICIAL:</label>
                 <input type="text" id="inputMatricula" placeholder="Ex: 20261TDS01" autocomplete="off">
             </div>
             <button class="btn-gerar" onclick="gerarCodigo()">GERAR MEU QR CODE</button>
@@ -207,41 +234,33 @@
 
     <div class="rodape">
         <strong>Informações do Desenvolvedor:</strong><br>
-        Sistema Desenvolvido por: Prof. Vinícius Oliveira<br>
+        Desenvolvido por: Prof. Vinícius Oliveira<br>
         IFPE - Campus Barreiros<br>
         Versão 1.0 / 2026
     </div>
 
     <script>
-        // Variável global para guardar o desenho do QR Code na memória (Padrão Singleton)
         let qrcode_desenho = null; 
 
         function gerarCodigo() {
             try {
-                // 1. Pega o que o aluno digitou e tira espaços em branco
                 let matriculaBruta = document.getElementById("inputMatricula").value.trim().toUpperCase();
 
-                // 2. Validação: Checa se o campo está vazio
                 if (matriculaBruta === "") {
                     alert("Por favor, digite sua matrícula primeiro!");
                     return;
                 }
 
-                // 3. A Mágica da Matemática: Gera o Hash SHA-256
                 let hashSeguro = CryptoJS.SHA256(matriculaBruta).toString(CryptoJS.enc.Hex).toUpperCase();
 
-                // 4. Mostra o resultado na tela
                 document.getElementById("area_resultado").style.display = "flex";
                 
-                // Exibe um pedaço do Hash para o aluno saber que foi criptografado
                 let hashResumido = hashSeguro.substring(0, 8) + "......" + hashSeguro.substring(hashSeguro.length - 8);
                 document.getElementById("txtHash").innerText = "Chave Criptografada: " + hashResumido;
 
-                // 5. Lógica Segura de Geração do QR Code
                 let areaQr = document.getElementById("boxQrCode");
 
                 if (qrcode_desenho === null) {
-                    // Se for a primeira vez que o aluno clica, cria o gerador
                     qrcode_desenho = new QRCode(areaQr, {
                         text: hashSeguro,
                         width: 220,
@@ -251,19 +270,16 @@
                         correctLevel : QRCode.CorrectLevel.H
                     });
                 } else {
-                    // Se o gerador já existe, apenas limpa e desenha o novo Hash
                     qrcode_desenho.clear();
                     qrcode_desenho.makeCode(hashSeguro);
                 }
 
             } catch (erro) {
-                // Se der qualquer erro (ex: bloqueio de internet), o sistema avisa!
                 console.error(erro);
                 alert("Ops! Ocorreu um erro no processamento.\n\nDetalhe: " + erro.message + "\n\nVerifique se a sua conexão não está bloqueando as bibliotecas de segurança.");
             }
         }
 
-        // Bônus de UX: Permite gerar apertando a tecla 'Enter' do teclado
         document.getElementById("inputMatricula").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
