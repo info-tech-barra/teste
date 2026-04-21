@@ -80,7 +80,7 @@
             gap: 20px;
         }
 
-        /* --- AULA TDS: NOVO ALERTA MODERNO E ANIMADO --- */
+        /* ALERTA MODERNO E ANIMADO */
         .alerta-container {
             display: flex;
             align-items: center;
@@ -88,20 +88,18 @@
             border-left: 5px solid #f59e0b;
             padding: 15px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Sombra suave */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             gap: 15px;
         }
 
         .alerta-icone {
             font-size: 35px;
-            /* Aplica a animação infinita de pulsar */
             animation: chamarAtencao 1.5s infinite;
         }
 
-        /* Configuração da animação CSS */
         @keyframes chamarAtencao {
             0% { transform: scale(1); }
-            50% { transform: scale(1.15); } /* Cresce 15% */
+            50% { transform: scale(1.15); } 
             100% { transform: scale(1); }
         }
 
@@ -333,24 +331,46 @@
             }
         }
 
+        // --- AULA TDS: NOVA FUNÇÃO DE DOWNLOAD À PROVA DE MODO ESCURO ---
         function baixarQRCode() {
             let container = document.getElementById("boxQrCode");
             let img = container.querySelector("img");
+            let originalCanvas = container.querySelector("canvas");
             
-            let canvas = container.querySelector("canvas");
+            // Pega a imagem ou o canvas gerado pela biblioteca
+            let sourceElement = (img && img.src) ? img : originalCanvas;
             
-            let link = document.createElement("a");
-            
-            if (img && img.src) {
-                link.href = img.src;
-            } else if (canvas) {
-                link.href = canvas.toDataURL("image/png");
-            } else {
+            if (!sourceElement) {
                 alert("Erro: O QR Code ainda não foi gerado.");
                 return;
             }
 
-            link.download = "QRCode_Refeitorio_" + matriculaAtual + ".png";
+            // Cria um "quadro" (canvas) temporário na memória
+            let tempCanvas = document.createElement("canvas");
+            let ctx = tempCanvas.getContext("2d");
+
+            // Define o tamanho final da imagem com uma borda segura (260x260)
+            let finalSize = 260;
+            let qrSize = 220;
+            let offset = (finalSize - qrSize) / 2; // Centraliza o QR Code (borda de 20px)
+
+            tempCanvas.width = finalSize;
+            tempCanvas.height = finalSize;
+
+            // 1. Pinta todo o fundo do quadro de BRANCO SÓLIDO
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, finalSize, finalSize);
+
+            // 2. Desenha o QR Code por cima do fundo branco
+            ctx.drawImage(sourceElement, offset, offset, qrSize, qrSize);
+
+            // 3. Salva como JPEG (JPEG não aceita transparência, garantindo a legibilidade)
+            let link = document.createElement("a");
+            link.href = tempCanvas.toDataURL("image/jpeg", 1.0);
+            
+            // Força a extensão .jpg
+            link.download = "QRCode_Refeitorio_" + matriculaAtual + ".jpg";
+            
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
